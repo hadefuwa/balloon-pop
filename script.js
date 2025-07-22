@@ -4,12 +4,15 @@ class BalloonPopGame {
         this.startScreen = document.getElementById('startScreen');
         this.gameOverlay = document.getElementById('gameOverlay');
         this.scoreElement = document.getElementById('score');
+        this.highScoreElement = document.getElementById('highScore');
         this.timerElement = document.getElementById('timer');
         this.levelElement = document.getElementById('level');
         this.finalScoreElement = document.getElementById('finalScore');
+        this.finalHighScoreElement = document.getElementById('finalHighScore');
         this.finalTimeElement = document.getElementById('finalTime');
         
         this.score = 0;
+        this.highScore = this.loadHighScore();
         this.level = 1;
         this.gameTime = 0;
         this.isGameRunning = false;
@@ -25,7 +28,27 @@ class BalloonPopGame {
         this.baseSpeed = 1; // pixels per frame
         
         this.initializeEventListeners();
+        this.updateHighScoreDisplay();
         this.showStartScreen();
+    }
+    
+    loadHighScore() {
+        const saved = localStorage.getItem('balloonPopHighScore');
+        return saved ? parseInt(saved) : 0;
+    }
+    
+    saveHighScore(score) {
+        if (score > this.highScore) {
+            this.highScore = score;
+            localStorage.setItem('balloonPopHighScore', score.toString());
+            this.updateHighScoreDisplay();
+            return true;
+        }
+        return false;
+    }
+    
+    updateHighScoreDisplay() {
+        this.highScoreElement.textContent = this.highScore;
     }
     
     initializeEventListeners() {
@@ -167,6 +190,11 @@ class BalloonPopGame {
         const stringKnot = document.createElement('div');
         stringKnot.className = 'string-knot';
         balloon.appendChild(stringKnot);
+        
+        // Add string tail element
+        const stringTail = document.createElement('div');
+        stringTail.className = 'string-tail';
+        balloon.appendChild(stringTail);
         
         // Random position at bottom
         const gameAreaRect = this.gameArea.getBoundingClientRect();
@@ -330,14 +358,40 @@ class BalloonPopGame {
         if (this.timerInterval) clearInterval(this.timerInterval);
         if (this.spawnInterval) clearInterval(this.spawnInterval);
         
+        // Check and save high score
+        const isNewHighScore = this.saveHighScore(this.score);
+        
         // Update final score display
         this.finalScoreElement.textContent = this.score;
+        this.finalHighScoreElement.textContent = this.highScore;
         this.finalTimeElement.textContent = this.gameTime;
         
         // Show game over screen
         this.gameOverlay.classList.add('show');
         
-        console.log(`Game Over! Final Score: ${this.score}, Time: ${this.gameTime}s`);
+        // Show new high score celebration
+        if (isNewHighScore) {
+            this.showNewHighScoreCelebration();
+        }
+        
+        console.log(`Game Over! Final Score: ${this.score}, High Score: ${this.highScore}, Time: ${this.gameTime}s`);
+    }
+    
+    showNewHighScoreCelebration() {
+        const celebration = document.createElement('div');
+        celebration.className = 'high-score-celebration';
+        celebration.innerHTML = `
+            <div class="celebration-content">
+                <h3>🎉 NEW HIGH SCORE! 🎉</h3>
+                <p>Congratulations! You beat your previous best!</p>
+            </div>
+        `;
+        
+        this.gameArea.appendChild(celebration);
+        
+        setTimeout(() => {
+            celebration.remove();
+        }, 3000);
     }
     
     restartGame() {
