@@ -1,0 +1,360 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+.game-container {
+    width: 100%;
+    max-width: 800px;
+    height: 600px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    position: relative;
+    overflow: hidden;
+}
+
+.game-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.score-container, .timer-container, .level-container {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: white;
+    font-weight: bold;
+    font-size: 18px;
+}
+
+.score-label, .timer-label, .level-label {
+    opacity: 0.8;
+}
+
+.game-area {
+    position: relative;
+    height: calc(100% - 60px);
+    overflow: hidden;
+    background: linear-gradient(to bottom, #87CEEB, #98FB98);
+}
+
+.balloon {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    cursor: pointer;
+    transition: transform 0.1s ease;
+    animation: float 3s ease-in-out infinite;
+    /* Realistic balloon shape */
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    /* Add depth with box-shadow */
+    box-shadow: 
+        inset 8px -8px 15px rgba(255, 255, 255, 0.3),
+        inset -8px 8px 15px rgba(0, 0, 0, 0.2),
+        0 4px 8px rgba(0, 0, 0, 0.3);
+    /* Add balloon shine/highlight */
+    position: relative;
+    /* Add subtle texture */
+    background-image: 
+        radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 70%, rgba(0, 0, 0, 0.05) 0%, transparent 50%);
+    background-blend-mode: overlay;
+}
+
+.balloon::before {
+    content: '';
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    width: 20px;
+    height: 20px;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.3) 50%, transparent 100%);
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 3px;
+    height: 25px;
+    background: linear-gradient(to bottom, #333 0%, #666 50%, #333 100%);
+    border-radius: 1px;
+    z-index: 1;
+}
+
+.balloon .string-knot {
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 10px;
+    background: #333;
+    border-radius: 50%;
+    z-index: 1;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.balloon:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        inset 8px -8px 15px rgba(255, 255, 255, 0.4),
+        inset -8px 8px 15px rgba(0, 0, 0, 0.25),
+        0 6px 12px rgba(0, 0, 0, 0.4);
+}
+
+@keyframes float {
+    0%, 100% { 
+        transform: translateY(0px) rotate(1deg); 
+    }
+    25% { 
+        transform: translateY(-8px) rotate(-1deg); 
+    }
+    50% { 
+        transform: translateY(-12px) rotate(0deg); 
+    }
+    75% { 
+        transform: translateY(-6px) rotate(1deg); 
+    }
+}
+
+.balloon.red { 
+    background: linear-gradient(135deg, #ff4757 0%, #ff3742 50%, #ff3838 100%);
+    border: 1px solid rgba(255, 71, 87, 0.3);
+}
+.balloon.blue { 
+    background: linear-gradient(135deg, #3742fa 0%, #2f3542 50%, #5352ed 100%);
+    border: 1px solid rgba(55, 66, 250, 0.3);
+}
+.balloon.green { 
+    background: linear-gradient(135deg, #2ed573 0%, #1e90ff 50%, #00d2d3 100%);
+    border: 1px solid rgba(46, 213, 115, 0.3);
+}
+.balloon.yellow { 
+    background: linear-gradient(135deg, #ffa502 0%, #ff6348 50%, #ff9ff3 100%);
+    border: 1px solid rgba(255, 165, 2, 0.3);
+}
+.balloon.purple { 
+    background: linear-gradient(135deg, #a55eea 0%, #8854d0 50%, #786fa6 100%);
+    border: 1px solid rgba(165, 94, 234, 0.3);
+}
+.balloon.pink { 
+    background: linear-gradient(135deg, #fd79a8 0%, #fdcb6e 50%, #e84393 100%);
+    border: 1px solid rgba(253, 121, 168, 0.3);
+}
+
+.balloon.popped {
+    animation: pop 0.4s ease-out forwards;
+}
+
+@keyframes pop {
+    0% { 
+        transform: scale(1) rotate(0deg); 
+        opacity: 1; 
+        filter: brightness(1);
+    }
+    20% { 
+        transform: scale(1.2) rotate(5deg); 
+        opacity: 0.9; 
+        filter: brightness(1.2);
+    }
+    40% { 
+        transform: scale(1.4) rotate(-3deg); 
+        opacity: 0.7; 
+        filter: brightness(1.5);
+    }
+    60% { 
+        transform: scale(1.6) rotate(8deg); 
+        opacity: 0.5; 
+        filter: brightness(1.8);
+    }
+    80% { 
+        transform: scale(1.8) rotate(-5deg); 
+        opacity: 0.3; 
+        filter: brightness(2);
+    }
+    100% { 
+        transform: scale(0) rotate(0deg); 
+        opacity: 0; 
+        filter: brightness(0);
+    }
+}
+
+.game-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+
+.game-overlay.show {
+    display: flex;
+}
+
+.game-over-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+}
+
+.game-over-content h2 {
+    color: #e74c3c;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.game-over-content p {
+    margin: 10px 0;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.start-screen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 5;
+}
+
+.start-content {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 50px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    max-width: 400px;
+}
+
+.start-content h1 {
+    color: #667eea;
+    margin-bottom: 20px;
+    font-size: 2.5em;
+}
+
+.start-content p {
+    margin: 15px 0;
+    color: #666;
+    font-size: 1.1em;
+}
+
+.start-btn, .restart-btn {
+    background: linear-gradient(45deg, #667eea, #764ba2);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: 25px;
+    font-size: 1.2em;
+    font-weight: bold;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 20px;
+}
+
+.start-btn:hover, .restart-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+.game-controls {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+}
+
+.control-btn {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 15px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.control-btn:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.score-popup {
+    position: absolute;
+    color: #00b894;
+    font-weight: bold;
+    font-size: 1.2em;
+    pointer-events: none;
+    animation: scoreFloat 1s ease-out forwards;
+    z-index: 5;
+}
+
+@keyframes scoreFloat {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-50px); opacity: 0; }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .game-container {
+        width: 95%;
+        height: 500px;
+        margin: 10px;
+    }
+    
+    .game-header {
+        padding: 10px 15px;
+    }
+    
+    .score-container, .timer-container, .level-container {
+        font-size: 14px;
+    }
+    
+    .start-content, .game-over-content {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    .start-content h1 {
+        font-size: 2em;
+    }
+    
+    .balloon {
+        width: 50px;
+        height: 70px;
+    }
+} 
