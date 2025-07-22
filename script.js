@@ -79,6 +79,18 @@ class BalloonPopGame {
             }
         });
         
+        // Block right-click context menu on game area
+        this.gameArea.addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        
+        // Block right-click on entire game container
+        document.querySelector('.game-container').addEventListener('contextmenu', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        
         // Keyboard shortcuts
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
@@ -225,8 +237,8 @@ class BalloonPopGame {
                 return;
             }
             
-            // Remove balloons that are off screen
-            if (newTop < -100) {
+            // Remove balloons that are off screen (accounting for longer tails)
+            if (newTop < -120) {
                 balloon.remove();
                 this.balloons.splice(index, 1);
             }
