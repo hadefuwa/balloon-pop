@@ -51,7 +51,68 @@ class BalloonPopGame {
         this.highScoreElement.textContent = this.highScore;
     }
     
+    jumpToLevel10() {
+        if (!this.isGameRunning || this.isPaused) {
+            // Can only jump if game is running and not paused
+            return;
+        }
+        
+        // Set level to 10
+        this.level = 10;
+        this.levelElement.textContent = this.level;
+        
+        // Update spawn rate for level 10
+        if (this.updateSpawnRate) {
+            this.updateSpawnRate();
+        }
+        
+        // Disable the button temporarily
+        const jumpBtn = document.getElementById('jumpToLevel10Btn');
+        jumpBtn.disabled = true;
+        jumpBtn.textContent = '⏳ Jumped to Level 10';
+        
+        // Re-enable after 3 seconds
+        setTimeout(() => {
+            jumpBtn.disabled = false;
+            jumpBtn.textContent = '⚡ Jump to Level 10';
+        }, 3000);
+        
+        // Show level jump notification
+        this.showLevelJumpNotification();
+        
+        console.log('Jumped to Level 10! Spawn rate and speed increased.');
+    }
+    
+    showLevelJumpNotification() {
+        const notification = document.createElement('div');
+        notification.className = 'level-jump-notification';
+        notification.innerHTML = `
+            <div class="notification-content">
+                <h3>🚀 Jumped to Level 10!</h3>
+                <p>Fast balloons incoming! No points earned for skipping.</p>
+            </div>
+        `;
+        
+        // Append to body instead of game area to avoid blocking gameplay
+        document.body.appendChild(notification);
+        
+        setTimeout(() => {
+            notification.remove();
+        }, 3000);
+    }
+    
     initializeEventListeners() {
+        // Prevent text selection globally
+        document.addEventListener('selectstart', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        
+        document.addEventListener('mousedown', (e) => {
+            e.preventDefault();
+            return false;
+        });
+        
         // Start game button
         document.getElementById('startBtn').addEventListener('click', () => {
             this.startGame();
@@ -70,6 +131,11 @@ class BalloonPopGame {
         // Mute button
         document.getElementById('muteBtn').addEventListener('click', () => {
             this.toggleMute();
+        });
+        
+        // Jump to Level 10 button
+        document.getElementById('jumpToLevel10Btn').addEventListener('click', () => {
+            this.jumpToLevel10();
         });
         
         // Game area click for popping balloons
